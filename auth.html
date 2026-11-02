@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Register | CampusBase</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="navbar">
+  <a href="index.html" class="logo"><span class="logo-icon">C</span><span>Campus<span class="highlight">Base</span></span></a>
+  <a href="admin-login.html" class="uni-btn">Admin</a>
+</header>
+<main class="auth-wrap">
+  <section class="auth-card">
+    <div class="tabs auth-tabs" role="tablist">
+      <button id="tabLogin" role="tab" aria-selected="true">Login</button>
+      <button id="tabReg" role="tab" aria-selected="false">Register</button>
+    </div>
+    <form id="form" class="admin-form" novalidate>
+      <h2 id="title">Welcome back</h2>
+      <label id="nameRow" hidden>Full name <input id="name" class="search" maxlength="60" autocomplete="name" placeholder="Your name"></label>
+      <label>Email <input id="email" type="email" class="search" required autocomplete="email" placeholder="you@example.com"></label>
+      <label>Password <input id="password" type="password" class="search" required minlength="6" autocomplete="current-password" placeholder="Min 6 characters"></label>
+      <label id="pass2Row" hidden>Confirm password <input id="password2" type="password" class="search" autocomplete="new-password" placeholder="Repeat password"></label>
+      <p class="form-msg" id="msg" role="alert"></p>
+      <button class="primary-btn" id="submit" type="submit">Login</button>
+    </form>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="auth.js"></script>
+</body>
+</html>

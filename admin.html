@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | CampusBase</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="navbar">
+  <a href="index.html" class="logo"><span class="logo-icon">C</span><span>Campus<span class="highlight">Base</span> Admin</span></a>
+  <span class="who" id="who"></span>
+  <button class="uni-btn" id="logout" hidden>Logout</button>
+</header>
+<main class="section admin">
+  <p class="empty" id="msg">Checking admin access…</p>
+  <div id="panel" hidden>
+    <form id="form" class="admin-form">
+      <h2>Upload PDF</h2>
+      <label>University <select id="uni" required></select></label>
+      <label>Branch <select id="branch" required></select></label>
+      <label>Year <select id="year" required></select></label>
+      <label>Type <select id="type" required></select></label>
+      <label>Title <input id="title" class="search" required maxlength="120" placeholder="e.g. DSA Paper 2024"></label>
+      <label>PDF file (max 20 MB) <input id="file" type="file" accept="application/pdf" required></label>
+      <button class="primary-btn" id="submit" type="submit">Upload</button>
+    </form>
+    <h2 style="margin:36px 0 12px">Uploaded material</h2>
+    <ul class="saved-list" id="list"></ul>
+  </div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="admin.js"></script>
+</body>
+</html>

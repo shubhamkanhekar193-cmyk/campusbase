@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CampusBase | Your Campus, Your Knowledge</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<header class="navbar">
+  <button class="icon-btn" id="backBtn" aria-label="Back" hidden>←</button>
+  <button class="icon-btn" id="burger" aria-label="Open menu">☰</button>
+  <a href="#home" class="logo"><span class="logo-icon">C</span><span>Campus<span class="highlight">Base</span></span></a>
+  <button class="icon-btn" id="themeBtn" aria-label="Switch theme">🌙</button>
+  <button class="icon-btn" id="profBtn" aria-label="Profile">👤</button>
+</header>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Menu"><div class="card row" id="dUser"></div><ul id="dList"></ul></aside>
+<main>
+<section class="view wrap" id="v-home">
+  <div class="card notice"><b>NOTICE</b><span>Welcome to CampusBase!</span></div>
+  <div class="card mt"><div class="sbar"><span>🔍</span><input id="sidIn" placeholder="Search by SID (Student ID)…" aria-label="Search by SID"><button class="btn-s" id="sidBtn">Search</button></div><div class="sid-res muted" id="sidRes"></div></div>
+  <div class="card mt row" id="greet"></div>
+  <div class="card mt"><b>Stay Updated with CampusBase</b><p class="muted">Results, notices &amp; new content first</p><div class="soc mt" id="soc"></div></div>
+  <div class="card mt row" id="branchCard"></div>
+  <h3 class="sec">Dashboard</h3><div class="grid3" id="dash"></div>
+  <h3 class="sec">More Resources</h3><div class="grid3" id="more" style="grid-template-columns:1fr 1fr"></div>
+  <div class="comm mt"><h3>Join Our Learning Community</h3><p style="font-size:.85rem">Ask doubts, share knowledge &amp; grow together on our WhatsApp community.</p><button id="commBtn">Explore Now</button></div>
+  <div class="card mt row"><span class="av" style="border-radius:12px">⬇</span><div><b>Download App</b><div class="muted">Tap to download APK &amp; install manually</div></div><button class="icon-btn sp" id="apkBtn" aria-label="Download app">⬇</button></div>
+</section>
+
+<section class="view auth-page" id="v-auth" hidden>
+ <div class="auth2">
+  <div class="a2-left">
+    <div class="row"><span class="a2-sm">Academic Portal</span><span class="sp row"><button class="a2-link" id="toReg" type="button">Sign Up</button><button class="a2-pill" id="joinBtn" type="button">Join Us</button></span></div>
+    <div class="row"><span class="av">C</span><div><b>CampusBase</b><div class="a2-sm">Engineering Academic Portal</div></div></div>
+  </div>
+  <div class="a2-right"><form id="authForm" class="f2" novalidate>
+    <div class="a2-logo">campusbase</div><h2 id="aTitle">Welcome Back</h2><p class="a2-sub" id="aSub"></p>
+    <div id="regRows" class="f2" hidden>
+      <label>Full name<input id="aName" maxlength="60" autocomplete="name"></label>
+      <label>Email<input id="aEmail" type="email" autocomplete="email"></label>
+      <label>University<select id="aUni"></select></label><label>Branch<select id="aBranch"></select></label><label>Year<select id="aYear"></select></label>
+    </div>
+    <label><span id="idLbl"></span><input id="aId" autocomplete="username" maxlength="80"></label>
+    <label>Password<input id="aPass" type="password" placeholder="Min 6 characters" autocomplete="current-password"></label>
+    <div class="row"><a class="a2-a" id="masterLink">🛡 <span id="mLbl">Admin Login</span></a><a class="a2-o sp" id="forgot">Forgot password?</a></div>
+    <p class="form-msg" id="aMsg" role="alert"></p>
+    <button class="a2-btn" id="aSubmit" type="submit">Login</button>
+    <p class="a2-foot"><span id="swapTxt"></span> <a class="a2-o" id="swap"></a></p>
+  </form></div>
+ </div>
+</section>
+
+<section class="view wrap" id="v-admin" hidden>
+  <div class="row"><span class="hint" id="who"></span><button class="uni-btn sp" id="adOut">Logout</button></div>
+  <form id="upForm" class="f card mt"><h2>📤 Upload Files (admin only)</h2>
+    <label>University<select id="uUni"></select></label><label>Branch<select id="uBranch"></select></label><label>Year<select id="uYear"></select></label><label>Type<select id="uType"></select></label>
+    <label>Title<input id="uTitle" class="search" required maxlength="120"></label><label>File — PDF, image, Word, PPT, Excel… (max 20 MB)<input id="uFile" type="file" required></label>
+    <button class="primary-btn" type="submit">Upload</button></form>
+  <h3 class="sec">Uploaded files — delete anytime</h3><ul class="saved-list" id="upList"></ul>
+</section>
+</main>
+
+<footer class="foot" id="foot">
+  <div class="row"><b style="font-size:1.1rem;color:var(--text)">Campus<span class="highlight">Base</span></b><span class="sp" style="text-align:right">Academic Excellence Redefined for Engineering Students</span></div>
+  <div class="card owner mt"><span class="muted">WEBSITE OWNERS</span><b>Ravi Avdhut</b><b>Shubham Kanhekar</b><span>Owners &amp; Operators — CampusBase</span></div>
+  <div class="cols">
+    <div><h5>LEGAL</h5><a data-soon>Privacy Policy</a><a data-soon>Refund Policy</a><a data-soon>Terms &amp; Conditions</a></div>
+    <div><h5>COMPLIANCE</h5><a data-soon>Copyright Notice</a><a data-soon>Terms of Use</a></div>
+    <div><h5>PLATFORM</h5><a data-soon>About Us</a><a data-soon>Contact / Support</a></div>
+    <div><h5>CONNECT WITH US</h5><a data-soc="instagram">Instagram</a><a data-soc="whatsapp">WhatsApp Group</a><a data-soc="telegram">Telegram</a></div>
+  </div>
+  <div class="note">© 2026 Ravi Avdhut &amp; Shubham Kanhekar (CampusBase). Unauthorized reproduction or distribution of any content on this platform is strictly prohibited.</div>
+  <div class="note">All study material is provided for academic reference only. CampusBase is not liable for any examination outcomes.</div>
+  <p class="mt">Academic Year 2025–26</p>
+</footer>
+<nav class="bnav" aria-label="Bottom">
+  <button data-n="home" class="on"><span>🏠</span>Home</button><button data-n="explore"><span>🧭</span>Explore</button><button data-n="soon"><span>👥</span>Social</button>
+  <button data-n="soon"><span>🔔</span>Alerts</button><button data-n="prof"><span>👤</span>Profile</button><button data-n="soon"><span>✉️</span>S-Mail</button>
+</nav>
+
+<dialog id="modal" class="modal">
+  <div class="modal-head"><h3 id="mTitle">Study material</h3><button class="icon-btn" id="mClose" aria-label="Close">✕</button></div>
+  <div class="filters"><label>University<select id="fUni"></select></label><label>Branch<select id="fBranch"></select></label><label>Year<select id="fYear"></select></label></div>
+  <div class="tabs" id="tabs"></div><ul class="res-list" id="resList"></ul>
+</dialog>
+<dialog id="sheet" class="sheet"><div id="sheetBody"></div></dialog>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="portal.js"></script>
+</body>
+</html>

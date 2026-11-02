@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>CampusBase | Your Campus, Your Knowledge</title>
+<meta name="description" content="Find university syllabus, study notes and previous year question papers in one place.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="navbar">
+  <a href="#home" class="logo"><span class="logo-icon">C</span><span>Campus<span class="highlight">Base</span></span></a>
+  <nav class="nav-links" id="navLinks" aria-label="Main">
+    <a href="#home">Home</a>
+    <a href="#universities">Universities</a>
+    <a href="#resources">Study Material</a>
+    <a href="#saved">Saved <span class="badge" id="savedCount">0</span></a>
+    <a href="auth.html" id="authLink">Login / Register</a>
+  </nav>
+  <button class="icon-btn" id="themeBtn" aria-label="Switch theme">🌙</button>
+  <button class="menu-btn icon-btn" id="menuBtn" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+</header>
+
+<main>
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <span class="tag">YOUR ACADEMIC JOURNEY STARTS HERE</span>
+      <h1>Your Campus.<br>Your <span class="highlight">Knowledge.</span></h1>
+      <p>Discover study notes, university syllabi and previous year question papers — all in one place.</p>
+      <a href="#universities" class="primary-btn">Explore Universities →</a>
+      <div class="hero-stats">
+        <div><strong data-count="4">0</strong><span>Universities</span></div>
+        <div><strong data-count="8">0</strong><span>Branches</span></div>
+        <div><strong>∞</strong><span>Learning Goals</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="book-card">
+        <span class="book-icon">📚</span>
+        <h3>Learn Smarter</h3>
+        <p>Your resources, organized.</p>
+        <div class="resource-line"><span>📄 Syllabus</span><span>✓</span></div>
+        <div class="resource-line"><span>📝 Notes</span><span>✓</span></div>
+        <div class="resource-line"><span>🎯 Question Papers</span><span>✓</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="universities">
+    <div class="section-heading">
+      <span class="tag">CHOOSE YOUR UNIVERSITY</span>
+      <h2>One Platform. <span class="highlight">Four Universities.</span></h2>
+      <p>Select your university to explore available study material.</p>
+      <input type="search" id="search" class="search" placeholder="Search university, e.g. Pune or DBATU" aria-label="Search universities">
+    </div>
+    <div class="university-grid" id="uniGrid"></div>
+    <p class="empty" id="empty" hidden>No university found. Try a different name.</p>
+  </section>
+
+  <section class="section" id="resources">
+    <div class="section-heading">
+      <span class="tag">EVERYTHING YOU NEED</span>
+      <h2>Your Study Toolkit</h2>
+      <p>Build your preparation with the right resources.</p>
+    </div>
+    <div class="resource-grid">
+      <div class="resource-card"><span>📚</span><h3>Study Notes</h3><p>Subject-wise learning notes.</p></div>
+      <div class="resource-card"><span>📋</span><h3>Syllabus</h3><p>Understand your course structure.</p></div>
+      <div class="resource-card"><span>📝</span><h3>Question Papers</h3><p>Prepare with previous year papers.</p></div>
+      <div class="resource-card"><span>⭐</span><h3>Important Questions</h3><p>Focus your exam preparation.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="saved">
+    <div class="section-heading">
+      <h2>Your Saved Material</h2>
+      <p>Tap ☆ on any resource to keep it here.</p>
+    </div>
+    <ul class="saved-list" id="savedList"></ul>
+  </section>
+
+  <section class="notice">
+    <h2>Made for Students, Built for Learning.</h2>
+    <p>CampusBase is being developed to organize educational resources from multiple universities in one place.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  <a href="#home" class="logo"><span class="logo-icon">C</span><span>Campus<span class="highlight">Base</span></span></a>
+  <p>© <span id="year"></span> CampusBase. Learn without limits.</p>
+  <p class="footer-note">University names belong to their respective institutions.</p>
+</footer>
+
+<dialog id="modal" class="modal" aria-labelledby="mTitle">
+  <div class="modal-head">
+    <h3 id="mTitle"></h3>
+    <button class="icon-btn" id="mClose" aria-label="Close">✕</button>
+  </div>
+  <div class="filters">
+    <label>Branch <select id="fBranch"></select></label>
+    <label>Year <select id="fYear"></select></label>
+  </div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <ul class="res-list" id="resList"></ul>
+</dialog>
+
+<button class="to-top" id="toTop" aria-label="Back to top" hidden>↑</button>
+<div class="toast" id="toast" role="status"></div>
+<script src="script.js"></script>
+<script type="module" src="nav-auth.js"></script>
+</body>
+</html>

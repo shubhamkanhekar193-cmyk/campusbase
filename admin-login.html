@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | CampusBase</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="navbar">
+  <a href="index.html" class="logo"><span class="logo-icon">C</span><span>Campus<span class="highlight">Base</span> Admin</span></a>
+  <a href="auth.html" class="uni-btn">Student login</a>
+</header>
+<main class="auth-wrap">
+  <section class="auth-card">
+    <form id="form" class="admin-form" novalidate>
+      <h2>🔐 Admin Login</h2>
+      <p class="hint">Sirf 2 authorised admin hi PDFs upload / delete kar sakte hain.</p>
+      <label>Admin email <input id="email" type="email" class="search" required autocomplete="email"></label>
+      <label>Password <input id="password" type="password" class="search" required autocomplete="current-password"></label>
+      <p class="form-msg" id="msg" role="alert"></p>
+      <button class="primary-btn" id="submit" type="submit">Login as Admin</button>
+    </form>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="admin-login.js"></script>
+</body>
+</html>
