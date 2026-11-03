@@ -26,7 +26,7 @@ async function logout(){await supabase.auth.signOut();await load();toast("Logged
 
 // theme
 const setTheme=d=>{document.documentElement.dataset.theme=d?"dark":"light";$("themeBtn").textContent=d?"🌙":"☀️"};
-setTheme(matchMedia("(prefers-color-scheme: dark)").matches);$("themeBtn").onclick=()=>setTheme(document.documentElement.dataset.theme!=="dark");
+const th=(()=>{try{return localStorage.getItem("cb2_theme")}catch{return null}})();setTheme(th!=="light");$("themeBtn").onclick=()=>{const d=document.documentElement.dataset.theme!=="dark";setTheme(d);try{localStorage.setItem("cb2_theme",d?"dark":"light")}catch{}};
 
 // drawer
 const T=t=>"type:"+t;
@@ -106,11 +106,17 @@ const MODES={login:["Welcome Back","Login via Email or PRN Number","Email Addres
  master:["Admin Login","Admins only — upload & manage files","Admin Email","Login as Admin","Not an admin?","Student login","login"]};
 function setMode(m){mode=m;const d=MODES[m],adm=m==="master";
   $("aTitle").textContent=d[0];$("aSub").textContent=d[1];$("idLbl").textContent=d[2];$("aSubmit").textContent=d[3];$("swapTxt").textContent=d[4];$("swap").textContent=d[5];
-  $("regRows").hidden=m!=="register";$("toReg").textContent=m==="register"?"Login":"Sign Up";$("toReg").hidden=adm;
+  $("regRows").hidden=m!=="register";$("toReg").textContent=m==="register"?"Login":"Sign Up";$("toReg").hidden=adm;$("neon").classList.toggle("reg",m==="register");$("nWelcome").innerHTML=m==="register"?"WELCOME!":m==="master"?"ADMIN<br>ACCESS":"WELCOME<br>BACK!";
   $("mLbl").textContent=adm?"Student Login":"Admin Login";$("forgot").hidden=false;$("aId").type=adm?"email":"text";$("aMsg").textContent="";$("aMsg").style.color="";
   $("aPass").autocomplete=m==="register"?"new-password":"current-password"}
-$("swap").onclick=()=>mode==="master"?(location.hash="login"):setMode(MODES[mode][6]);$("toReg").onclick=()=>setMode(mode==="register"?"login":"register");
-$("masterLink").onclick=()=>{location.hash=mode==="master"?"login":"master"};
+$("toReg").onclick=()=>setMode(mode==="register"?"login":"register");
+function flip(act){const n=$("neon");if(n.classList.contains("busy"))return;n.classList.add("busy");
+  setTimeout(()=>{const was=n.classList.contains("reg");act();const is=n.classList.contains("reg"),ch=is!==was;
+    n.classList.remove("to-reg","to-login");void n.offsetWidth;if(ch)n.classList.add(is?"to-reg":"to-login");
+    setTimeout(()=>n.classList.remove("busy","to-reg","to-login"),ch?800:250)},320)}
+const goMode=m=>flip(()=>{setMode(m);const h=m==="master"?"master":"login";if(location.hash.slice(1)!==h)location.hash=h});
+$("swap").onclick=()=>goMode(mode==="master"?"login":MODES[mode][6]);
+$("masterLink").onclick=()=>goMode(mode==="master"?"login":"master");
 $("forgot").onclick=async()=>{const id=$("aId").value.trim();if(!id.includes("@"))return toast("Enter your email above, then tap Forgot password");
   const{error}=await supabase.auth.resetPasswordForEmail(id,{redirectTo:location.href.split("#")[0]});toast(error?error.message:"Password reset link sent to your email")};
 $("joinBtn").onclick=()=>social("whatsapp");
