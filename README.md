@@ -9,6 +9,5 @@ Open `index.html` (ya kisi bhi static hosting - Vercel/GitHub Pages - var upload
 - Demo mode: data browser madhe save hoto. Real database sathi Supabase (purvicha CampusBase.zip madhla setup.sql) jodava lagel.
 
 ## Deploy (Vercel / Netlify / GitHub Pages)
-Unzip, then upload the files so that `index.html` is in the ROOT of the site. The page is fully self-contained
-(no other CSS/JS files), so the design, colours and login look exactly the same as the live preview.
-Theme is dark by default (toggle ☀️/🌙 in the header is remembered).
+Upload so that `index.html` is in the ROOT of the site. The page is one self-contained file (no external CSS/JS),
+so theme, background and the animated neon login look the same everywhere. Theme: dark teal by default (☀️/🌙 toggle is remembered).
