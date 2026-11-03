@@ -168,10 +168,10 @@ revoke all on function public.cb_make_admin(text, text, text) from public, anon,
 do $$
 declare
   a1_email text := 'shubhamkanhekar193@gmail.com';   -- <== EDIT  Admin 1 email
-  a1_pass  text := 'xF8vejmKtafCS__Ln!';         -- <== EDIT  Admin 1 password (min 8 chars)
+  a1_pass  text := 'shubhamk@1';         -- <== EDIT  Admin 1 password (min 8 chars)
   a1_name  text := 'Shubham Kanhekar';             -- <== EDIT  Admin 1 name
   a2_email text := 'raviavdhut74@gmail.com';   -- <== EDIT  Admin 2 email
-  a2_pass  text := 'uuq!XxaqtVrNJKK1Ve';         -- <== EDIT  Admin 2 password (min 8 chars)
+  a2_pass  text := 'ravi@123';         -- <== EDIT  Admin 2 password (min 8 chars)
   a2_name  text := 'Ravi Avdhut';                  -- <== EDIT  Admin 2 name
 begin
   if a1_email like 'CHANGE_ME%' or a2_email like 'CHANGE_ME%' or a1_pass like 'CHANGE_ME%' or a2_pass like 'CHANGE_ME%' then
