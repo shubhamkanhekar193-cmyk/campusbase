@@ -23,8 +23,8 @@ create trigger admins_limit before insert on public.admins
 for each row execute function public.limit_admins();
 
 insert into public.admins (email) values
-  ('admin1@gmail.com'),   -- 👈 Admin 1
-  ('admin2@gmail.com')    -- 👈 Admin 2
+  ('shubhamkanhekar193@gmail.com'),   -- 👈 Admin 1
+  ('raviavdhut74@gmail.com')    -- 👈 Admin 2
 on conflict do nothing;
 
 -- Admin sirf apni row dekh sakta hai; insert/update/delete ka policy nahi => koi 3rd admin app se nahi ban sakta
