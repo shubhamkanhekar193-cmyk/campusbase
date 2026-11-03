@@ -1,32 +1,13 @@
-# CampusBase — cleaned project package
+# CampusBase — fixed package
 
-This package keeps the current CampusBase portal and removes duplicate/legacy pages and
-conflicting setup scripts from the original ZIP.
+## Deploy
+1. `supabase.js` already has your Project URL + anon key (anon key is public by design; never use service_role).
+2. Supabase -> SQL Editor: open `supabase_setup_all.sql`, set the 2 admin PASSWORDS in the last block
+   (`CHANGE_ME_PASSWORD_1/2`, min 8 chars), Run once. Admin emails are already filled.
+3. Supabase -> Authentication -> Providers -> Email ON; URL Configuration: Site URL + Redirect URL = your deployed site URL.
+4. Upload ALL files in this folder with `index.html` at the site root (Vercel / Netlify / GitHub Pages).
+   Do NOT open index.html by double-click (file://) — browsers block ES modules there; use a real URL or `npx serve`.
 
-## Files
-- `index.html` — default website entry point (current portal UI)
-- `portal.js`, `portal.css`, `style.css`, `bg.jpg` — portal logic and styling
-- `supabase.js` — Supabase client configuration
-- `supabase_setup_all.sql` — combined database, security, storage, and admin setup
-
-## Required setup before running
-1. Open `supabase.js`.
-2. Replace `https://YOUR-PROJECT.supabase.co` with your Supabase Project URL.
-3. Replace `YOUR-ANON-PUBLIC-KEY` with the Supabase **anon/public** key.
-   Never put the `service_role` key in browser code.
-4. Open `supabase_setup_all.sql` in Supabase SQL Editor.
-5. In the final admin-creation block, set strong, unique passwords for both admins.
-   The admin emails are already set to:
-   - shubhamkanhekar193@gmail.com
-   - raviavdhut74@gmail.com
-6. Run the SQL once, then deploy the contents of this folder with `index.html` at the site root.
-
-## Important
-- The SQL file contains password placeholders, not actual passwords. Choose passwords privately
-  before running it; do not send passwords in chat or commit them to GitHub.
-- Enable Email provider in Supabase Authentication.
-- Configure the deployed website URL under Authentication → URL Configuration.
-- This ZIP cannot be fully connected/tested against your Supabase project until your real
-  Project URL and anon/public key are added.
-- The original archive contained a second SQL setup file with hard-coded plaintext admin
-  passwords. That file has deliberately been excluded for account security.
+## Use
+Login (PRN/email + password) -> students browse files. "Admin Login" -> "Upload Files" (admins only, any file type).
+Telegram + WhatsApp ON, Instagram OFF (see `SOCIAL` in `portal.js`).
