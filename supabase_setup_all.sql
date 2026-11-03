@@ -1,5 +1,10 @@
--- CampusBase: run this ONE file in Supabase -> SQL Editor (safe to re-run).
--- !! Before running: replace admin1@gmail.com / admin2@gmail.com below with your 2 admin emails !!
+-- =====================================================================
+-- CampusBase — COMPLETE Supabase setup (tables, security, storage, 2 ADMIN LOGINS)
+-- Run this ONE file in Supabase -> SQL Editor.  Safe to re-run.
+--
+-- BEFORE RUNNING: scroll to the very bottom ("STEP: CREATE THE 2 ADMIN LOGINS")
+-- and put your 2 admin emails + passwords there.
+-- =====================================================================
 
 -- CampusBase: 2 admins + PDFs (Supabase SQL Editor me run karo)
 -- 1) Neeche dono admin emails apni emails se badlo.
@@ -22,10 +27,7 @@ drop trigger if exists admins_limit on public.admins;
 create trigger admins_limit before insert on public.admins
 for each row execute function public.limit_admins();
 
-insert into public.admins (email) values
-  ('shubhamkanhekar193@gmail.com'),   -- 👈 Admin 1
-  ('raviavdhut74@gmail.com')    -- 👈 Admin 2
-on conflict do nothing;
+-- (admin accounts are created at the very bottom of this file)
 
 -- Admin sirf apni row dekh sakta hai; insert/update/delete ka policy nahi => koi 3rd admin app se nahi ban sakta
 drop policy if exists "admin reads self" on public.admins;
@@ -126,3 +128,62 @@ grant execute on function public.find_student(text) to authenticated;
 
 -- 4) Admins can upload ANY file type (setup.sql allowed only PDF)
 update storage.buckets set allowed_mime_types = null where id = 'pdfs';
+
+
+-- =====================================================================
+-- STEP: CREATE THE 2 ADMIN LOGINS   (edit the 6 values marked  <== EDIT)
+-- These two accounts are created already-confirmed, so they can log in
+-- immediately with "Admin Login" (email + password). Max 2 admins, always.
+-- Re-running with a new password simply resets that admin's password.
+-- =====================================================================
+create extension if not exists pgcrypto with schema extensions;
+
+create or replace function public.cb_make_admin(p_email text, p_pass text, p_name text) returns void
+language plpgsql security definer set search_path = public, auth, extensions as $$
+declare uid uuid;
+begin
+  p_email := lower(trim(p_email));
+  select id into uid from auth.users where lower(email) = p_email;
+  if uid is null then
+    uid := gen_random_uuid();
+    insert into auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+      raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+      confirmation_token, recovery_token, email_change_token_new, email_change)
+    values ('00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated', p_email,
+      crypt(p_pass, gen_salt('bf')), now(),
+      '{"provider":"email","providers":["email"]}', jsonb_build_object('name', p_name), now(), now(), '', '', '', '');
+    insert into auth.identities (id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at)
+    values (gen_random_uuid(), uid, jsonb_build_object('sub', uid::text, 'email', p_email, 'email_verified', true),
+      'email', uid::text, now(), now(), now());
+  else
+    update auth.users set encrypted_password = crypt(p_pass, gen_salt('bf')),
+      email_confirmed_at = coalesce(email_confirmed_at, now()) where id = uid;
+  end if;
+  insert into public.admins (email) select p_email where not exists (select 1 from public.admins where lower(email) = p_email);
+  insert into public.profiles (id, name, email) values (uid, p_name, p_email)
+    on conflict (id) do update set name = excluded.name, email = excluded.email;
+end $$;
+revoke all on function public.cb_make_admin(text, text, text) from public, anon, authenticated;
+
+do $$
+declare
+  a1_email text := 'CHANGE_ME_admin1@gmail.com';   -- <== EDIT  Admin 1 email
+  a1_pass  text := 'CHANGE_ME_PASSWORD_1';         -- <== EDIT  Admin 1 password (min 8 chars)
+  a1_name  text := 'Shubham Kanhekar';             -- <== EDIT  Admin 1 name
+  a2_email text := 'CHANGE_ME_admin2@gmail.com';   -- <== EDIT  Admin 2 email
+  a2_pass  text := 'CHANGE_ME_PASSWORD_2';         -- <== EDIT  Admin 2 password (min 8 chars)
+  a2_name  text := 'Ravi Avdhut';                  -- <== EDIT  Admin 2 name
+begin
+  if a1_email like 'CHANGE_ME%' or a2_email like 'CHANGE_ME%' or a1_pass like 'CHANGE_ME%' or a2_pass like 'CHANGE_ME%' then
+    raise exception 'Please edit the 2 admin emails and passwords in this block first, then run again.';
+  end if;
+  if length(a1_pass) < 8 or length(a2_pass) < 8 or lower(a1_email) = lower(a2_email) then
+    raise exception 'Passwords need 8+ characters and the two admin emails must be different.';
+  end if;
+  delete from public.admins where lower(email) not in (lower(a1_email), lower(a2_email));  -- keep exactly these 2
+  perform public.cb_make_admin(a1_email, a1_pass, a1_name);
+  perform public.cb_make_admin(a2_email, a2_pass, a2_name);
+end $$;
+
+drop function if exists public.cb_make_admin(text, text, text);
+-- Check:  select email from public.admins;   -> must show exactly your 2 admins
