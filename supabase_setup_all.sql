@@ -167,10 +167,10 @@ revoke all on function public.cb_make_admin(text, text, text) from public, anon,
 
 do $$
 declare
-  a1_email text := 'CHANGE_ME_admin1@gmail.com';   -- <== EDIT  Admin 1 email
+  a1_email text := 'shubhamkanhekar193@gmail.com';   -- <== EDIT  Admin 1 email
   a1_pass  text := 'CHANGE_ME_PASSWORD_1';         -- <== EDIT  Admin 1 password (min 8 chars)
   a1_name  text := 'Shubham Kanhekar';             -- <== EDIT  Admin 1 name
-  a2_email text := 'CHANGE_ME_admin2@gmail.com';   -- <== EDIT  Admin 2 email
+  a2_email text := 'raviavdhut74@gmail.com';   -- <== EDIT  Admin 2 email
   a2_pass  text := 'CHANGE_ME_PASSWORD_2';         -- <== EDIT  Admin 2 password (min 8 chars)
   a2_name  text := 'Ravi Avdhut';                  -- <== EDIT  Admin 2 name
 begin

@@ -31,28 +31,26 @@
 </section>
 
 <section class="view auth-page" id="v-auth" hidden>
- <div class="neon-glow"><div class="neon" id="neon"><div class="neon-in">
-  <div class="n-panel"><h2 id="nWelcome">WELCOME<br>BACK!</h2></div>
-  <div class="n-form"><form id="authForm" class="nf" novalidate>
-    <div class="n-brand"><b>C</b><span>Campus<em>Base</em></span></div>
-    <h2 id="aTitle">Login</h2><p class="n-sub" id="aSub"></p>
-    <div id="regRows" class="nf-rows" hidden>
-      <label class="nf-in"><span>Full name</span><input id="aName" maxlength="60" autocomplete="name"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></i></label>
-      <label class="nf-in"><span>Email</span><input id="aEmail" type="email" autocomplete="email"><i><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></i></label>
-      <label class="nf-in"><span>University</span><select id="aUni"></select></label>
-      <label class="nf-in"><span>Branch</span><select id="aBranch"></select></label>
-      <label class="nf-in"><span>Year</span><select id="aYear"></select></label>
+ <div class="auth2">
+  <div class="a2-left">
+    <div class="row"><span class="a2-sm">Academic Portal</span><span class="sp row"><button class="a2-link" id="toReg" type="button">Sign Up</button><button class="a2-pill" id="joinBtn" type="button">Join Us</button></span></div>
+    <div class="row"><span class="av">C</span><div><b>CampusBase</b><div class="a2-sm">Engineering Academic Portal</div></div></div>
+  </div>
+  <div class="a2-right"><form id="authForm" class="f2" novalidate>
+    <div class="a2-logo">campusbase</div><h2 id="aTitle">Welcome Back</h2><p class="a2-sub" id="aSub"></p>
+    <div id="regRows" class="f2" hidden>
+      <label>Full name<input id="aName" maxlength="60" autocomplete="name"></label>
+      <label>Email<input id="aEmail" type="email" autocomplete="email"></label>
+      <label>University<select id="aUni"></select></label><label>Branch<select id="aBranch"></select></label><label>Year<select id="aYear"></select></label>
     </div>
-    <label class="nf-in"><span id="idLbl"></span><input id="aId" autocomplete="username" maxlength="80"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></i></label>
-    <label class="nf-in"><span>Password</span><input id="aPass" type="password" placeholder="Min 6 characters" autocomplete="current-password"><i><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i></label>
+    <label><span id="idLbl"></span><input id="aId" autocomplete="username" maxlength="80"></label>
+    <label>Password<input id="aPass" type="password" placeholder="Min 6 characters" autocomplete="current-password"></label>
+    <div class="row"><a class="a2-a" id="masterLink">🛡 <span id="mLbl">Admin Login</span></a><a class="a2-o sp" id="forgot">Forgot password?</a></div>
     <p class="form-msg" id="aMsg" role="alert"></p>
-    <button class="n-btn" id="aSubmit" type="submit">Login</button>
-    <p class="n-foot"><span id="swapTxt"></span> <a id="swap"></a></p>
-    <p class="n-foot"><a id="forgot">Forgot password?</a></p>
-    <p class="n-foot"><a id="masterLink"><span id="mLbl">Admin Login</span></a></p>
-    <span hidden id="toReg"></span><span hidden id="joinBtn"></span>
+    <button class="a2-btn" id="aSubmit" type="submit">Login</button>
+    <p class="a2-foot"><span id="swapTxt"></span> <a class="a2-o" id="swap"></a></p>
   </form></div>
- </div></div></div>
+ </div>
 </section>
 
 <section class="view wrap" id="v-admin" hidden>
