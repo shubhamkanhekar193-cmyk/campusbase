@@ -3,6 +3,9 @@ import { supabase, BUCKET, CATALOG, isAdmin } from "./supabase.js";
 
 // Social links are OFF for now. Set on:true and a url to enable later.
 const SOCIAL={instagram:{on:false,url:""},whatsapp:{on:true,url:"https://chat.whatsapp.com/ICt2INQ4g2JEKB8urgboBd"},telegram:{on:true,url:"https://t.me/campusbase_study_material"}};
+// Premium plans (edit names / prices / text here). Admin activates a plan for a student in the admin panel.
+const PLANS={silver:{name:"Premium Silver",price:"₹49",days:30,perks:"Silver-tagged notes, question banks and previous year papers for your university."},
+  gold:{name:"Premium Gold",price:"₹99",days:30,perks:"Everything in Silver plus Gold-only material (answer bank, solved papers, extra notes)."}};
 const C={unis:["SPPU","BATU","SGBBU","AKTU"],branches:[...new Set(["AI & ML",...CATALOG.branches])],years:CATALOG.years,
   types:[...new Set(["Notes","Handwritten Notes","Question Bank","Answer Bank","Formula Notes","Previous Year Papers","Books",...CATALOG.types])]};
 const YL={FE:"First Year",SE:"Second Year",TE:"Third Year",BE:"Final Year"};
@@ -19,7 +22,7 @@ const social=k=>{const s=SOCIAL[k];s.on&&s.url?open(s.url,"_blank","noopener"):s
 const S={user:null,prof:null,admin:false};
 async function load(){const{data:{session}}=await supabase.auth.getSession();S.user=session?session.user:null;S.prof=null;S.admin=false;
   if(S.user){const[p,a]=await Promise.all([supabase.from("profiles").select("*").eq("id",S.user.id).maybeSingle(),isAdmin()]);S.prof=p.data;S.admin=a}}
-const me=()=>{if(!S.user)return null;const p=S.prof||{};return{name:p.name||S.user.user_metadata?.full_name||S.user.email.split("@")[0],email:S.user.email,prn:p.prn||"—",uni:p.university||C.unis[0],branch:p.branch||C.branches[0],year:p.year||"FE",photo:p.photo,admin:S.admin}};
+const me=()=>{if(!S.user)return null;const p=S.prof||{};const eff=p.plan&&p.plan!=="free"&&(!p.plan_expires||new Date(p.plan_expires)>new Date());return{name:p.name||S.user.user_metadata?.full_name||S.user.email.split("@")[0],email:S.user.email,prn:p.prn||"—",uni:p.university||C.unis[0],branch:p.branch||C.branches[0],year:p.year||"FE",photo:p.photo,admin:S.admin,plan:eff?p.plan:"free",exp:eff&&p.plan_expires?new Date(p.plan_expires).toLocaleDateString():""}};
 const sid=u=>"@"+u.name.toLowerCase().trim().replace(/\s+/g,".");
 const avatar=u=>`<span class="av">${u&&u.photo?`<img src="${esc(u.photo)}" alt="">`:esc(u?u.name[0].toUpperCase():"👤")}</span>`;
 async function logout(){await supabase.auth.signOut();await load();toast("Logged out");location.hash="home";route()}
@@ -30,7 +33,7 @@ const th=(()=>{try{return localStorage.getItem("cb2_theme")}catch{return null}})
 
 // drawer
 const T=t=>"type:"+t;
-const MENU=[["👥","Social Mode","soon"],["🏠","Home","home"],["📗","Notes",T("Notes")],["✍️","Handwritten Notes",T("Handwritten Notes")],["🗄️","Question Bank",T("Question Bank")],["⭐","Answer Bank",T("Answer Bank")],["☑️","MCQ","soon"],["🏆","Leaderboard","soon"],["💬","Doubt Solving","soon"],["√x","Formula Notes",T("Formula Notes")],["📄","Previous Year Papers",T("Previous Year Papers")],["📕","Books",T("Books")],["⬇️","Downloads","soon"],["🎖️","Certificates","soon"],["📝","Revaluation Score","soon"],["🎁","Refer & Earn","soon"],["📱","Download App","soon"],["🧾","Payment Receipt","soon"],["ℹ️","About Us","foot"],["📸","Follow on Instagram","s:instagram"],["💚","Join WhatsApp Group","s:whatsapp"],["✈️","Join Telegram","s:telegram"],["✉️","Contact Us","foot"],["⚙️","Settings","soon"]];
+const MENU=[["👥","Social Mode","soon"],["🏠","Home","home"],["⭐","Premium","plans"],["📗","Notes",T("Notes")],["✍️","Handwritten Notes",T("Handwritten Notes")],["🗄️","Question Bank",T("Question Bank")],["⭐","Answer Bank",T("Answer Bank")],["☑️","MCQ","soon"],["🏆","Leaderboard","soon"],["💬","Doubt Solving","soon"],["√x","Formula Notes",T("Formula Notes")],["📄","Previous Year Papers",T("Previous Year Papers")],["📕","Books",T("Books")],["⬇️","Downloads","soon"],["🎖️","Certificates","soon"],["📝","Revaluation Score","soon"],["🎁","Refer & Earn","soon"],["📱","Download App","soon"],["🧾","Payment Receipt","soon"],["ℹ️","About Us","foot"],["📸","Follow on Instagram","s:instagram"],["💚","Join WhatsApp Group","s:whatsapp"],["✈️","Join Telegram","s:telegram"],["✉️","Contact Us","foot"],["⚙️","Settings","soon"]];
 function drawer(){const u=me();
   $("dUser").innerHTML=avatar(u)+`<div><b>${esc(u?u.name:"Guest")}</b><div class="muted">${esc(u?u.branch:"Please login")}</div></div>`;
   const l=$("dList");l.innerHTML="";
@@ -38,7 +41,7 @@ function drawer(){const u=me();
   const li=document.createElement("li"),b=mk("button",u?"⎋  Logout":"⎋  Login / Register","lo");b.onclick=()=>{setDrawer(false);u?logout():(location.hash="login")};li.append(b);l.append(li)}
 const setDrawer=o=>{$("drawer").classList.toggle("on",o);$("scrim").classList.toggle("on",o)};
 $("burger").onclick=()=>{drawer();setDrawer(true)};$("scrim").onclick=()=>setDrawer(false);
-function go(a){if(a==="soon")return soon();if(a==="home"){location.hash="home";scrollTo(0,0)}else if(a==="admin")location.hash="admin";else if(a==="foot")$("foot").scrollIntoView({behavior:"smooth"});
+function go(a){if(a==="soon")return soon();if(a==="home"){location.hash="home";scrollTo(0,0)}else if(a==="plans")showPlans();else if(a==="admin")location.hash="admin";else if(a==="foot")$("foot").scrollIntoView({behavior:"smooth"});
   else if(a.startsWith("s:"))social(a.slice(2));else if(a.startsWith("type:"))browse(a.slice(5))}
 
 // routing
@@ -46,7 +49,7 @@ function route(){const h=location.hash.slice(1)||"home",u=me();let v="home";
   if(h==="login"||h==="master"){if(u){location.hash=u.admin?"admin":"home";return}v="auth";setMode(h==="master"?"master":(mode==="register"?"register":"login"))}
   else if(h==="admin"){if(u&&u.admin)v="admin";else{location.hash="master";return}}
   document.querySelectorAll(".view").forEach(s=>s.hidden=s.id!=="v-"+v);$("backBtn").hidden=v==="home";
-  if(v==="home")home();if(v==="admin"){$("who").textContent="Signed in as admin: "+u.email;list()}
+  if(v==="home")home();if(v==="admin"){$("who").textContent="Signed in as admin: "+u.email;list();listPremium()}
   document.querySelectorAll(".bnav button").forEach(b=>b.classList.toggle("on",b.dataset.n==="home"&&v==="home"))}
 $("backBtn").onclick=()=>history.length>1?history.back():(location.hash="home");
 addEventListener("hashchange",()=>{route();scrollTo(0,0)});
@@ -57,12 +60,12 @@ const MORE=[["📄","Previous Year Papers","Download previous year question pape
 function card(c){const d=mk("div",null,"card dc");d.innerHTML=`<span class="ic">${c[0]}</span><b>${esc(c[1])}</b><span class="muted">${esc(c[2])}</span>`;
   const b=mk("button",c[4],"uni-btn");b.onclick=()=>c[3]==="@admin"?(location.hash="admin"):c[3]?browse(c[3]):soon();d.append(b);return d}
 function home(){const u=me();
-  $("greet").innerHTML=u?`${avatar(u)}<div><b>Hello, ${esc(u.name)}! 👋</b><div class="muted">Keep learning, keep growing.</div>${u.admin?'<span class="chip">Admin</span>':`<span class="chip">${esc(YL[u.year]||"")} Student</span>`}</div><div class="sp muted" style="text-align:right">Your Progress<br>Coming soon</div>`
+  $("greet").innerHTML=u?`<span id="gAv" style="cursor:pointer">${avatar(u)}</span><div><b>Hello, ${esc(u.name)}! 👋</b><div class="muted">${u.photo?"Keep learning, keep growing.":"📷 Tap your photo to add one"}</div>${u.admin?'<span class="chip">Admin</span>':`<span class="chip">${esc(YL[u.year]||"")} Student</span>`}</div><div class="sp muted" style="text-align:right">Your Progress<br>Coming soon</div>`
     :`<span class="av">👋</span><div><b>Hello, Student!</b><div class="muted">Login with your PRN to personalise.</div></div><a class="uni-btn sp" href="#login">Login</a>`;
   $("branchCard").innerHTML=u&&!u.admin?`<span class="av" style="border-radius:12px">🤖</span><div><b>${esc(u.branch)}</b><div class="muted">${esc(u.uni)} · ${esc(YL[u.year])}</div></div><span class="chip sp">Open</span>`:`<div class="muted">${u?"Admin account":"Login to see your branch."}</div>`;
   $("soc").innerHTML="";[["ig","📸 Instagram","instagram"],["wa","💬 WhatsApp","whatsapp"],["tg","✈️ Telegram","telegram"]].forEach(([c,t,k])=>{const b=mk("button",t,c+(SOCIAL[k].on?"":" off"));b.onclick=()=>social(k);$("soc").append(b)});
   $("dash").replaceChildren(...(u&&u.admin?[["📤","Upload Files","Add or delete material","@admin","Open"]]:[]).concat(CARDS).map(card));$("more").replaceChildren(...MORE.map(card));
-  const cb=$("commBtn");cb.className=SOCIAL.whatsapp.on?"":"off";cb.onclick=()=>social("whatsapp");$("apkBtn").onclick=soon}
+  const cb=$("commBtn");cb.className=SOCIAL.whatsapp.on?"":"off";cb.onclick=()=>social("whatsapp");$("apkBtn").onclick=soon;const g=$("gAv");if(g)g.onclick=()=>profile();premBox(u)}
 $("sidBtn").onclick=async()=>{if(!S.user){toast("Login to search students");return}const q=$("sidIn").value.trim().replace(/^@?/,"@");
   const{data}=await supabase.rpc("find_student",{p_sid:q});const r=data&&data[0];$("sidRes").textContent=r?`✓ ${r.name} · ${r.branch} · ${YL[r.year]||r.year} · ${r.university}`:"No student found with this SID."};
 document.querySelectorAll("[data-soon]").forEach(a=>a.onclick=soon);document.querySelectorAll("[data-soc]").forEach(a=>a.onclick=()=>social(a.dataset.soc));
@@ -70,13 +73,13 @@ document.querySelectorAll(".bnav button").forEach(b=>b.onclick=()=>{const n=b.da
 
 // browse files
 let tab=C.types[0];fill("fUni",C.unis);fill("fBranch",C.branches);fill("fYear",C.years,YL);
-function browse(t){const u=me();tab=t;if(u&&!u.admin){$("fUni").value=u.uni;$("fBranch").value=u.branch;$("fYear").value=u.year}if(!$("modal").open)$("modal").showModal();show()}
+function browse(t){const u=me();if(!u){toast("Please login to view study material");location.hash="login";return}tab=t;$("fUni").disabled=!u.admin;if(!u.admin){$("fUni").value=u.uni;$("fBranch").value=u.branch;$("fYear").value=u.year}if(!$("modal").open)$("modal").showModal();show()}
 async function show(){const t=$("tabs");t.replaceChildren();C.types.forEach(x=>{const b=mk("button",x);b.setAttribute("aria-selected",x===tab);b.onclick=()=>{tab=x;show()};t.append(b)});
   const l=$("resList");l.replaceChildren(mk("li","Loading…","none"));
-  const{data,error}=await supabase.from("resources").select("*").eq("university",$("fUni").value).eq("branch",$("fBranch").value).eq("year",$("fYear").value).eq("type",tab).order("created_at",{ascending:false});
+  const{data,error}=await supabase.from("resources").select("*").eq("university",(me()&&!me().admin)?me().uni:$("fUni").value).eq("branch",$("fBranch").value).eq("year",$("fYear").value).eq("type",tab).order("created_at",{ascending:false});
   l.replaceChildren();if(error)return l.append(mk("li",error.message,"none"));
   if(!data.length)return l.append(mk("li","Nothing uploaded here yet.","none"));
-  data.forEach(x=>{const li=document.createElement("li"),a=mk("a",x.title);a.href=x.file_url;a.target="_blank";a.rel="noopener";li.append(a);l.append(li)})}
+  data.forEach(x=>{const li=document.createElement("li"),a=mk("a",x.title);a.href=x.file_url;a.target="_blank";a.rel="noopener";li.append(a);if(x.plan&&x.plan!=="free")li.append(mk("span","⭐ "+PLANS[x.plan].name,"chip"));l.append(li)})}
 ["fUni","fBranch","fYear"].forEach(i=>$(i).onchange=show);$("mClose").onclick=()=>$("modal").close();
 
 // profile sheet
@@ -85,14 +88,14 @@ function profile(mode){const u=me();if(!u){toast("Please login first");location.
   const s=$("sheet"),b=$("sheetBody");
   if(mode==="edit"||mode==="branch"){const br=mode==="branch";
     b.innerHTML=`<form id="pf" class="f"><h3>${br?"Change Branch":"Edit Profile"}</h3>`+(br?`<label>Branch<select id="pBranch">${opts(C.branches,u.branch)}</select></label>`:
-      `<label>Full name<input id="pName" class="search" maxlength="60" value="${esc(u.name)}"></label><label>University<select id="pUni">${opts(C.unis,u.uni)}</select></label><label>Year<select id="pYear">${opts(C.years,u.year,YL)}</select></label>`)+
+      `<label>Full name<input id="pName" class="search" maxlength="60" value="${esc(u.name)}"></label><label>University (locked — ask admin to change)<input class="search" value="${esc(u.uni)}" disabled></label><label>Year<select id="pYear">${opts(C.years,u.year,YL)}</select></label>`)+
       `<button class="primary-btn wide">Save</button><button type="button" class="primary-btn wide ghost" id="pBack">Cancel</button></form>`;
     $("pBack").onclick=()=>profile();
-    $("pf").onsubmit=async e=>{e.preventDefault();let p;if(br)p={branch:$("pBranch").value};else{const n=$("pName").value.trim();if(!n)return toast("Name required");p={name:n,university:$("pUni").value,year:$("pYear").value}}
+    $("pf").onsubmit=async e=>{e.preventDefault();let p;if(br)p={branch:$("pBranch").value};else{const n=$("pName").value.trim();if(!n)return toast("Name required");p={name:n,year:$("pYear").value}}
       if(await saveProf(p)){toast("Saved ✓");profile()}}}
   else{b.innerHTML=`<div style="text-align:center"><div class="pav">${avatar(u)}<label title="Change photo">📷<input type="file" id="pPhoto" accept="image/*" hidden></label></div><p class="muted">Tap the camera icon to update your photo.</p>
-    <h2>${esc(u.name)}</h2><p class="muted">${esc(u.email)}</p>${u.admin?'<p class="mt"><span class="chip">ADMIN</span></p>':`<p class="mt"><span class="chip">${esc((YL[u.year]||"").toUpperCase())}</span> <span class="chip">${esc(u.branch.toUpperCase())}</span></p>`}</div>
-    <div class="pg"><div><small>Public S ID</small><b>${esc(sid(u))}</b></div><div><small>PRN</small><b>${esc(u.prn)}</b></div><div><small>Year</small><b>${esc(YL[u.year])}</b></div><div><small>Branch</small><b>${esc(u.branch)}</b></div><div><small>University</small><b>${esc(u.uni)}</b></div><div><small>Academic Year</small><b>2025–26</b></div></div>
+    <h2>${esc(u.name)}</h2><p class="muted">${esc(u.email)}</p>${u.admin?'<p class="mt"><span class="chip">ADMIN</span></p>':`<p class="mt"><span class="chip">${esc((YL[u.year]||"").toUpperCase())}</span> <span class="chip">${esc(u.branch.toUpperCase())}</span> <span class="chip">${esc(planName(u).toUpperCase())}</span></p>`}</div>
+    <div class="pg"><div><small>Public S ID</small><b>${esc(sid(u))}</b></div><div><small>PRN</small><b>${esc(u.prn)}</b></div><div><small>Year</small><b>${esc(YL[u.year])}</b></div><div><small>Branch</small><b>${esc(u.branch)}</b></div><div><small>University</small><b>${esc(u.uni)}</b></div><div><small>Academic Year</small><b>2025–26</b></div><div><small>Plan</small><b>${esc(planName(u))}${u.exp?" · till "+esc(u.exp):""}</b></div></div>
     <button class="primary-btn wide" id="pEdit">✎ Edit Profile</button><button class="primary-btn wide" id="pBr">⇄ Change Branch</button><button class="primary-btn wide ghost" id="pClose">Close</button>`;
     $("pEdit").onclick=()=>profile("edit");$("pBr").onclick=()=>profile("branch");$("pClose").onclick=()=>s.close();
     $("pPhoto").onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=async()=>{const c=document.createElement("canvas");c.width=c.height=160;const m=Math.min(img.width,img.height);c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,160,160);if(await saveProf({photo:c.toDataURL("image/jpeg",.8)}))profile()};img.src=URL.createObjectURL(f)}}
@@ -151,16 +154,42 @@ async function list(){const l=$("upList");l.replaceChildren(mk("li","Loading…"
   data.forEach(x=>{const li=document.createElement("li"),a=mk("a",x.title);a.href=x.file_url;a.target="_blank";a.rel="noopener";const b=mk("button","Delete","danger-btn");
     b.onclick=async()=>{if(!confirm(`Delete "${x.title}"?`))return;b.disabled=true;const{error:e1}=await supabase.storage.from(BUCKET).remove([x.file_path]);if(e1){b.disabled=false;return toast("File delete failed: "+e1.message)}
       const{error:e2}=await supabase.from("resources").delete().eq("id",x.id);if(e2){b.disabled=false;return toast(e2.message)}toast("Deleted ✓");list()};
-    li.append(a,mk("span",`${x.university} · ${x.branch} · ${x.year} · ${x.type}`),b);l.append(li)})}
+    li.append(a,mk("span",`${x.university} · ${x.branch} · ${x.year} · ${x.type} · ${x.plan==="gold"||x.plan==="silver"?PLANS[x.plan].name:"Free"}`),b);l.append(li)})}
 $("upForm").onsubmit=async e=>{e.preventDefault();if(!S.admin)return toast("Admins only");const f=$("uFile").files[0];if(!f)return;if(f.size>20*1024*1024)return toast("File is larger than 20 MB");
   const btn=e.target.querySelector("button");btn.disabled=true;btn.textContent="Uploading…";
   const path=`${crypto.randomUUID()}-${f.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
   const{error:ue}=await supabase.storage.from(BUCKET).upload(path,f,{contentType:f.type||"application/octet-stream"});
   if(ue){btn.disabled=false;btn.textContent="Upload";return toast("Upload failed: "+ue.message)}
   const{data:pub}=supabase.storage.from(BUCKET).getPublicUrl(path);
-  const{error}=await supabase.from("resources").insert({university:$("uUni").value,branch:$("uBranch").value,year:$("uYear").value,type:$("uType").value,title:$("uTitle").value.trim(),file_path:path,file_url:pub.publicUrl});
+  const{error}=await supabase.from("resources").insert({university:$("uUni").value,branch:$("uBranch").value,year:$("uYear").value,type:$("uType").value,plan:$("uPlan").value,title:$("uTitle").value.trim(),file_path:path,file_url:pub.publicUrl});
   if(error){await supabase.storage.from(BUCKET).remove([path]);toast(error.message)}else{toast("File uploaded ✓");e.target.reset();list()}
   btn.disabled=false;btn.textContent="Upload"};
 
-supabase.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT"||ev==="PASSWORD_RECOVERY")setTimeout(async()=>{await load();route()},0)});
+// ---- Premium: plans screen, banner, admin activation ----
+const planName=u=>u.plan==="free"?"Free":PLANS[u.plan].name;
+function premBox(u){const e=$("premBox");if(!u||u.admin){e.innerHTML="";return}
+  e.innerHTML=u.plan!=="free"?`<div class="prem"><div><b>✨ ${esc(PLANS[u.plan].name)} active</b><div class="muted">Valid till ${esc(u.exp||"—")}</div></div></div>`
+   :`<div class="prem"><div><b>🚀 Get Premium</b><div class="muted">Silver ${esc(PLANS.silver.price)} · Gold ${esc(PLANS.gold.price)} — unlock extra notes &amp; papers</div></div><button class="btn-s" id="premBtn">View plans</button></div>`;
+  const b=$("premBtn");if(b)b.onclick=showPlans}
+function showPlans(){const u=me(),s=$("sheet"),b=$("sheetBody");
+  b.innerHTML=`<h2 style="text-align:center">⭐ Premium plans</h2><p class="muted" style="text-align:center">Free students see free material. Premium unlocks extra files for your university.</p>`+
+   Object.entries(PLANS).map(([k,p])=>`<div class="card mt"><div class="row"><b>${esc(p.name)}</b><span class="sp chip">${esc(p.price)} / ${p.days} days</span></div><p class="muted mt">${esc(p.perks)}</p>${u&&u.plan===k?'<span class="chip">Your current plan</span>':""}</div>`).join("")+
+   `<p class="muted mt">To buy: message the admin on WhatsApp with your PRN. The admin activates your plan.</p><button class="primary-btn wide" id="plBuy">Contact admin on WhatsApp</button><button class="primary-btn wide ghost" id="plClose">Close</button>`;
+  $("plBuy").onclick=()=>social("whatsapp");$("plClose").onclick=()=>s.close();if(!s.open)s.showModal()}
+async function listPremium(){const l=$("plList");l.replaceChildren();
+  const{data,error}=await supabase.from("profiles").select("name,prn,email,plan,plan_expires").neq("plan","free").order("plan_expires");
+  if(error)return l.append(mk("li",error.message,"none"));if(!data.length)return l.append(mk("li","No premium members yet.","none"));
+  data.forEach(x=>{const li=document.createElement("li");li.append(mk("strong",`${x.name} (${x.prn||x.email})`),mk("span",`${PLANS[x.plan].name} · till ${x.plan_expires?new Date(x.plan_expires).toLocaleDateString():"—"}`));l.append(li)})}
+$("plForm").onsubmit=async e=>{e.preventDefault();if(!S.admin)return;const btn=e.target.querySelector("button");btn.disabled=true;
+  const{error}=await supabase.rpc("set_plan",{p_who:$("plWho").value.trim(),p_plan:$("plPlan").value,p_days:+$("plDays").value});
+  btn.disabled=false;if(error)return toast(error.message);toast("Plan updated ✓");e.target.reset();listPremium()};
+
+// Password-reset email link opens the site in "recovery" mode -> ask for a new password
+function newPass(){const s=$("sheet"),b=$("sheetBody");
+  b.innerHTML=`<form id="npf" class="f"><h3>Set a new password</h3><label>New password<input id="np1" type="password" class="search" autocomplete="new-password"></label><label>Confirm password<input id="np2" type="password" class="search" autocomplete="new-password"></label><p class="form-msg" id="npm"></p><button class="primary-btn wide">Save password</button></form>`;
+  $("npf").onsubmit=async e=>{e.preventDefault();const a=$("np1").value,m=$("npm");if(a.length<6)return m.textContent="Minimum 6 characters.";if(a!==$("np2").value)return m.textContent="Passwords do not match.";
+    const{error}=await supabase.auth.updateUser({password:a});if(error)return m.textContent=error.message;s.close();toast("Password updated ✓")};
+  if(!s.open)s.showModal()}
+supabase.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT")setTimeout(async()=>{await load();route()},0);
+  if(ev==="PASSWORD_RECOVERY")setTimeout(async()=>{await load();route();newPass()},0)});
 load().then(route);

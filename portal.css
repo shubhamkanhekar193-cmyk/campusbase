@@ -128,3 +128,7 @@ body{background:linear-gradient(rgba(2,8,22,.18),rgba(2,8,22,.18)),url("bg.jpg")
 :root[data-theme=light] body{background:radial-gradient(circle at 50% 0,#dbe8ff 0,#eef4ff 60%)}
 .comm{background:linear-gradient(135deg,#1d4ed8,#0ea5e9)}
 .logo-icon{background:linear-gradient(135deg,#4f8cff,#1d4ed8)!important;color:#fff}
+
+/* ---- Premium banner ---- */
+.prem{display:flex;gap:12px;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;border-radius:var(--r);padding:16px}
+.prem .muted{color:#dbe6ff}.prem .btn-s{background:#fff;color:#1d3a9e;white-space:nowrap}
