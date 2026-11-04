@@ -1,7 +1,7 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 // 👉 Supabase → Project Settings → API se yahan paste karo (service_role kabhi nahi)
-const SUPABASE_URL = "https://tmwordddcqxllkcepdcz.supabase.co";
+const SUPABASE_URL = "https://campusbase-beta.vercel.app.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRtd29yZGRkY3F4bGxrY2VwZGN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3MDYzODcsImV4cCI6MjEwOTI4MjM4N30.uefLaDLEVkaLtGICajeUoJv7DyspGVISp8uqd9SOPLI";
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
